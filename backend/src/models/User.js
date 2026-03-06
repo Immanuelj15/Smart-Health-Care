@@ -4,18 +4,19 @@ import bcrypt from 'bcryptjs';
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: { type: String, required: false }, // Password optional for Google users
+  googleId: { type: String, unique: true, sparse: true }, // For Google OAuth
 
   // ✅ Mobile number validation
-  mobileNumber: { 
+  mobileNumber: {
     type: String,
     match: [/^[6-9]\d{9}$/, "Please enter a valid Indian mobile number"]
   },
 
-  role: { 
-    type: String, 
-    enum: ['patient', 'doctor', 'admin'], 
-    default: 'patient' 
+  role: {
+    type: String,
+    enum: ['patient', 'doctor', 'admin'],
+    default: 'patient'
   },
 
   // ✅ Doctor-specific fields

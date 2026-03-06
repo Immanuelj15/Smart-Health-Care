@@ -42,82 +42,143 @@ const BookingPage = () => {
   };
 
   return (
-    <div className="container mx-auto py-10">
-      <div className="max-w-xl mx-auto border rounded-lg p-8 shadow-lg bg-white">
-        <h2 className="text-2xl font-bold mb-6 text-center">Book Your Appointment</h2>
-        <form onSubmit={handleBooking} className="space-y-4">
+    <div className="min-h-screen bg-slate-50/50 pt-32 pb-24">
+      <div className="container mx-auto px-6 max-w-4xl">
+        <div className="grid lg:grid-cols-5 gap-12 items-start">
 
-          {/* ✅ This is the section that was missing */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Contact Number*</label>
-            <input
-              type="tel"
-              name="contactNumber"
-              value={formData.contactNumber}
-              onChange={onChange}
-              required
-              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-            />
-          </div>
+          <div className="lg:col-span-3">
+            <div className="card-premium bg-white shadow-2xl shadow-slate-200/50 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-2 h-full bg-indigo-600"></div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">City*</label>
-            <input
-              type="text"
-              name="city"
-              value={formData.city}
-              onChange={onChange}
-              required
-              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-            />
-          </div>
+              <h2 className="text-3xl font-black text-slate-900 tracking-tight mb-8 pl-4 flex items-center gap-3">
+                <span className="text-2xl">📋</span> Patient Protocol
+              </h2>
 
-          <div className="flex space-x-4">
-            <div className="w-1/2">
-              <label className="block text-sm font-medium text-gray-700">Age*</label>
-              <input
-                type="number"
-                name="age"
-                value={formData.age}
-                onChange={onChange}
-                required
-                className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-              />
+              <form onSubmit={handleBooking} className="space-y-8">
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Secure Contact</label>
+                    <input
+                      type="tel"
+                      name="contactNumber"
+                      value={formData.contactNumber}
+                      onChange={onChange}
+                      placeholder="+91 XXXXX XXXXX"
+                      required
+                      className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-medium text-slate-700"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Clinical Region</label>
+                    <input
+                      type="text"
+                      name="city"
+                      value={formData.city}
+                      onChange={onChange}
+                      placeholder="Enter Residential City"
+                      required
+                      className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-medium text-slate-700"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Patient Age</label>
+                    <input
+                      type="number"
+                      name="age"
+                      value={formData.age}
+                      onChange={onChange}
+                      placeholder="Years"
+                      required
+                      className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-medium text-slate-700"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Biological Gender</label>
+                    <select
+                      name="gender"
+                      value={formData.gender}
+                      onChange={onChange}
+                      required
+                      className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-medium text-slate-700"
+                    >
+                      <option value="" disabled>Select Matrix</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Clinical Notes (Optional)</label>
+                  <textarea
+                    name="notes"
+                    value={formData.notes}
+                    onChange={onChange}
+                    placeholder="Briefly describe your manifestation..."
+                    className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl h-32 focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-medium text-slate-700 resize-none shadow-inner"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full btn-premium py-5 font-black tracking-widest bg-gradient-to-r from-indigo-500 to-cyan-500 shadow-xl shadow-indigo-100 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3"
+                >
+                  <span>🔐</span>
+                  <span>Confirm and Secure Slot</span>
+                </button>
+
+                <p className="text-center text-[8px] text-slate-400 font-black uppercase tracking-[0.2em]">Matrix Secured Transaction • ₹500 Advance Required</p>
+              </form>
             </div>
-            <div className="w-1/2">
-              <label className="block text-sm font-medium text-gray-700">Gender*</label>
-              <select
-                name="gender"
-                value={formData.gender}
-                onChange={onChange}
-                required
-                className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+          </div>
+
+          <div className="lg:col-span-2 space-y-6">
+            <div className="card-premium bg-slate-900 border-none shadow-2xl shadow-indigo-900/20 text-white p-10 overflow-hidden relative">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-[60px] -mr-16 -mt-16"></div>
+              <div className="relative z-10">
+                <h3 className="text-xl font-black tracking-widest text-indigo-400 uppercase mb-8">Consultation Support</h3>
+                <div className="space-y-8">
+                  <div className="flex gap-4">
+                    <span className="text-2xl">🛰️</span>
+                    <div>
+                      <p className="text-xs font-bold text-white uppercase tracking-tight">Virtual Link Available</p>
+                      <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">High-def video consultation ready</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4">
+                    <span className="text-2xl">🛡️</span>
+                    <div>
+                      <p className="text-xs font-bold text-white uppercase tracking-tight">Verified Specialist</p>
+                      <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Certified clinical professionals</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4">
+                    <span className="text-2xl">⌛</span>
+                    <div>
+                      <p className="text-xs font-bold text-white uppercase tracking-tight">Zero-wait Protocol</p>
+                      <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Confirmed priority scheduling</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="card-premium bg-white border-dashed border-2 border-indigo-100 flex flex-col items-center text-center p-8">
+              <p className="text-slate-500 font-medium text-sm mb-6">Joining an existing session?</p>
+              <button
+                onClick={() => navigate(`/video-call/room-${Math.floor(Math.random() * 1000)}`)}
+                className="text-indigo-600 font-black text-[10px] uppercase tracking-widest hover:bg-indigo-50 px-6 py-3 rounded-2xl transition-all border border-indigo-100 flex items-center gap-3"
               >
-                <option value="" disabled>Select</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-              </select>
+                <span>📹</span> Join Stream Room
+              </button>
             </div>
           </div>
-          {/* End of missing section */}
 
-          <button type="submit" className="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold">
-            Confirm Booking (Advance: ₹500)
-          </button>
-        </form>
-
-        {/* Quick Link for Testing Video Call */}
-        <div className="mt-8 pt-6 border-t text-center">
-          <p className="text-gray-600 mb-2">Joining a scheduled consultation?</p>
-          <button
-            onClick={() => navigate(`/video-call/room-${Math.floor(Math.random() * 1000)}`)}
-            className="text-blue-600 font-semibold hover:underline flex items-center justify-center gap-2 mx-auto"
-          >
-            <span>📹</span> Join Video Consultation Room
-          </button>
         </div>
-
       </div>
     </div>
   );

@@ -30,21 +30,33 @@ export const sendRegistrationOtp = async (req, res) => {
 /* -------------------- ✅ VERIFY OTP & REGISTER USER -------------------- */
 export const verifyOtpAndRegister = async (req, res) => {
   const { email, otp } = req.body;
+  console.log(`Verifying OTP for ${email}: ${otp}`);
   try {
     const tempUser = otpStorage.get(email);
+    console.log('Stored tempUser:', tempUser);
+
     if (!tempUser || tempUser.expires < Date.now()) {
       return res.status(400).json({ message: 'OTP is invalid or has expired.' });
     }
     if (tempUser.otp !== otp) {
+      console.log(`OTP mismatch: Stored=${tempUser.otp}, Provided=${otp}`);
       return res.status(400).json({ message: 'Invalid OTP.' });
     }
     const { name, password, mobileNumber } = tempUser;
     const user = new User({ name, email, password, mobileNumber, role: 'patient' });
-    await user.save();
+
+    try {
+      await user.save();
+      console.log('User saved successfully');
+    } catch (saveError) {
+      console.error('User save error:', saveError.message);
+      return res.status(400).json({ message: saveError.message });
+    }
+
     otpStorage.delete(email);
     res.status(201).json({ message: 'Patient registered successfully!' });
   } catch (error) {
-    console.error(error.message);
+    console.error('Verify OTP error:', error.message);
     res.status(500).send('Server Error');
   }
 };

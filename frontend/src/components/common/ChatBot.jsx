@@ -37,7 +37,7 @@ const ChatBot = () => {
             // Pass last 5 messages for context
             const context = messages.slice(-5);
 
-            const { data } = await axios.post('http://localhost:5000/api/ai/chat',
+            const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/ai/chat`,
                 { message: userMsg.text, context },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -71,8 +71,8 @@ const ChatBot = () => {
                         {messages.map((msg, idx) => (
                             <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                                 <div className={`max-w-[80%] p-3 rounded-lg text-sm shadow-sm ${msg.sender === 'user'
-                                        ? 'bg-blue-600 text-white rounded-br-none'
-                                        : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none'
+                                    ? 'bg-blue-600 text-white rounded-br-none'
+                                    : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none'
                                     }`}>
                                     {msg.text}
                                 </div>

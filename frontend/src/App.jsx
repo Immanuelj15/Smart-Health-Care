@@ -32,43 +32,49 @@ import RegisterModal from './components/auth/RegisterModal';
 import Footer from './components/layout/Footer';
 import Navigation from './components/layout/Navigation';
 
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
 function App() {
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
   return (
     <Router>
-      <AuthProvider>
-        <CartProvider>
-          <ModalProvider>
-            <Toaster position="top-center" />
-            <LoginModal />
-            <RegisterModal />
-            <Navigation />
-            <main className="min-h-screen">
-              <Routes>
-                <Route path="/" element={<PublicHomePage />} />
-                <Route path="/admin" element={<AdminLoginPage />} />
-                <Route path="/register/admin" element={<AdminRegisterPage />} />
-                <Route path="/dashboard" element={<ProtectedRoute><DashboardRouter /></ProtectedRoute>} />
-                <Route path="/find-doctors" element={<ProtectedRoute><FindDoctorPage /></ProtectedRoute>} />
-                <Route path="/doctors/search" element={<ProtectedRoute><DoctorSearchResultsPage /></ProtectedRoute>} />
-                <Route path="/medicines" element={<ProtectedRoute><MedicinesPage /></ProtectedRoute>} />
-                <Route path="/medicines/:id" element={<ProtectedRoute><MedicineDetailsPage /></ProtectedRoute>} />
-                <Route path="/surgeries" element={<ProtectedRoute><SurgeriesPage /></ProtectedRoute>} />
-                <Route path="/surgeries/:id" element={<ProtectedRoute><SurgeryDetailsPage /></ProtectedRoute>} />
-                <Route path="/book-appointment/:doctorId" element={<ProtectedRoute><BookingPage /></ProtectedRoute>} />
-                <Route path="/cart" element={<ProtectedRoute><CartPage /></ProtectedRoute>} />
-                <Route path="/checkout-success" element={<ProtectedRoute><CheckoutSuccessPage /></ProtectedRoute>} />
-                <Route path="/symptom-checker" element={<ProtectedRoute><SymptomCheckerPage /></ProtectedRoute>} />
-                <Route path="/nutrition-scanner" element={<ProtectedRoute><NutritionScannerPage /></ProtectedRoute>} />
-                <Route path="/video-call/:roomId" element={<ProtectedRoute><VideoCallPage /></ProtectedRoute>} />
-                <Route path="/medical-records" element={<ProtectedRoute><MedicalRecordsPage /></ProtectedRoute>} />
-                <Route path="/login" element={<Navigate to="/" replace />} />
-              </Routes>
-            </main>
-            <Footer />
-            <ChatBot />
-          </ModalProvider>
-        </CartProvider>
-      </AuthProvider>
+      <GoogleOAuthProvider clientId={googleClientId}>
+        <AuthProvider>
+          <CartProvider>
+            <ModalProvider>
+              <Toaster position="top-center" />
+              <LoginModal />
+              <RegisterModal />
+              <Navigation />
+              <main className="min-h-screen">
+                <Routes>
+                  <Route path="/" element={<PublicHomePage />} />
+                  <Route path="/admin" element={<AdminLoginPage />} />
+                  <Route path="/register/admin" element={<AdminRegisterPage />} />
+                  <Route path="/dashboard" element={<ProtectedRoute><DashboardRouter /></ProtectedRoute>} />
+                  <Route path="/find-doctors" element={<ProtectedRoute><FindDoctorPage /></ProtectedRoute>} />
+                  <Route path="/doctors/search" element={<ProtectedRoute><DoctorSearchResultsPage /></ProtectedRoute>} />
+                  <Route path="/medicines" element={<ProtectedRoute><MedicinesPage /></ProtectedRoute>} />
+                  <Route path="/medicines/:id" element={<ProtectedRoute><MedicineDetailsPage /></ProtectedRoute>} />
+                  <Route path="/surgeries" element={<ProtectedRoute><SurgeriesPage /></ProtectedRoute>} />
+                  <Route path="/surgeries/:id" element={<ProtectedRoute><SurgeryDetailsPage /></ProtectedRoute>} />
+                  <Route path="/book-appointment/:doctorId" element={<ProtectedRoute><BookingPage /></ProtectedRoute>} />
+                  <Route path="/cart" element={<ProtectedRoute><CartPage /></ProtectedRoute>} />
+                  <Route path="/checkout-success" element={<ProtectedRoute><CheckoutSuccessPage /></ProtectedRoute>} />
+                  <Route path="/symptom-checker" element={<ProtectedRoute><SymptomCheckerPage /></ProtectedRoute>} />
+                  <Route path="/nutrition-scanner" element={<ProtectedRoute><NutritionScannerPage /></ProtectedRoute>} />
+                  <Route path="/video-call/:roomId" element={<ProtectedRoute><VideoCallPage /></ProtectedRoute>} />
+                  <Route path="/medical-records" element={<ProtectedRoute><MedicalRecordsPage /></ProtectedRoute>} />
+                  <Route path="/login" element={<Navigate to="/" replace />} />
+                </Routes>
+              </main>
+              <Footer />
+              <ChatBot />
+            </ModalProvider>
+          </CartProvider>
+        </AuthProvider>
+      </GoogleOAuthProvider>
     </Router>
   );
 }
