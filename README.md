@@ -80,4 +80,3 @@ npm run dev
 The system uses secure environment variables for all sensitive keys (API Keys, JWT Secrets, Database URIs). Always ensure these are added to your local `.env` before starting the development environment.
 
 ---
-*Developed with ❤️ by Antigravity*
