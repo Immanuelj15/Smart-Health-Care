@@ -43,6 +43,7 @@ const DoctorCard = ({ doctor }) => (
 const DoctorSearchResultsPage = () => {
   const [searchParams] = useSearchParams();
   const location = searchParams.get('location');
+  const specialty = searchParams.get('specialty'); // ✅ Defined specialty
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -51,8 +52,11 @@ const DoctorSearchResultsPage = () => {
     const fetchDoctors = async () => {
       try {
         setLoading(true);
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-        const res = await axios.get(`${apiUrl}/doctors/search?location=${location}`);
+        // Build query string dynamically
+        let query = `location=${location}`;
+        if (specialty) query += `&specialty=${specialty}`;
+        
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/doctors/search?${query}`);
         setDoctors(res.data);
       } catch (error) {
         console.error("Failed to fetch doctors", error);
@@ -61,13 +65,13 @@ const DoctorSearchResultsPage = () => {
       }
     };
     fetchDoctors();
-  }, [location]);
+  }, [location, specialty]); // ✅ Added specialty to dependency array
 
   return (
     <div className="min-h-screen bg-slate-50/50 pt-32 pb-24">
       <div className="container mx-auto px-6 max-w-5xl">
         <div className="mb-12 animate-in fade-in slide-in-from-left-4 duration-700">
-          <Link to="/find-doctor" className="text-[10px] font-black text-indigo-600 uppercase tracking-widest hover:text-indigo-700 transition-colors flex items-center gap-2 mb-6">
+          <Link to="/find-doctors" className="text-[10px] font-black text-indigo-600 uppercase tracking-widest hover:text-indigo-700 transition-colors flex items-center gap-2 mb-6">
             <span>← BACK TO SEARCH</span>
           </Link>
           <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">
@@ -89,8 +93,8 @@ const DoctorSearchResultsPage = () => {
           <div className="card-premium bg-white border-dashed border-2 border-slate-200 text-center py-20 animate-in zoom-in duration-500">
             <div className="text-6xl mb-6">🔍</div>
             <h3 className="text-2xl font-black text-slate-900 mb-2">No Specialists Located</h3>
-            <p className="text-slate-500 font-medium mb-8 max-w-sm mx-auto">We couldn't find any doctors in "{location}" matching our premium criteria. Try searching for a nearby metropolitan area.</p>
-            <Link to="/find-doctor" className="text-[10px] font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-6 py-3 rounded-2xl hover:bg-indigo-600 hover:text-white transition-all">
+            <p className="text-slate-500 font-medium mb-8 max-w-sm mx-auto">We couldn't find any doctors in "{location}" {specialty ? `specializing in ${specialty}` : ''} matching our premium criteria. Try searching for a nearby metropolitan area.</p>
+            <Link to="/find-doctors" className="text-[10px] font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-6 py-3 rounded-2xl hover:bg-indigo-600 hover:text-white transition-all">
               Reset Search Filter
             </Link>
           </div>

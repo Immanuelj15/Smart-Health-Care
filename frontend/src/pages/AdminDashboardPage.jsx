@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 
 const AdminDashboardPage = () => {
+  const { logout } = useAuth();
   const [activeTab, setActiveTab] = useState('manageUsers');
   const [users, setUsers] = useState([]);
   const [medicines, setMedicines] = useState([]);
@@ -11,9 +13,13 @@ const AdminDashboardPage = () => {
 
   const [docFormData, setDocFormData] = useState({
     name: '',
-    specialization: '',
+    email: '',
+    password: '',
+    specialty: '',
     experience: '',
-    fees: '',
+    location: '',
+    qualifications: '',
+    consultationFee: '',
     image: ''
   });
 
@@ -32,9 +38,9 @@ const AdminDashboardPage = () => {
       const headers = { Authorization: `Bearer ${token}` };
 
       const [usersRes, medicinesRes, recordsRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/admin/users', { headers }),
-        axios.get('http://localhost:5000/api/medicines'),
-        axios.get('http://localhost:5000/api/records/all', { headers }) // ✅ Fetch records
+        axios.get(`${import.meta.env.VITE_API_URL}/admin/users`, { headers }),
+        axios.get(`${import.meta.env.VITE_API_URL}/medicines`),
+        axios.get(`${import.meta.env.VITE_API_URL}/records/all`, { headers }) // ✅ Fetch records
       ]);
 
       setUsers(usersRes.data);
@@ -53,7 +59,7 @@ const AdminDashboardPage = () => {
   const updateClaimStatus = async (id, status) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5000/api/records/${id}/status`, { status }, {
+      await axios.put(`${import.meta.env.VITE_API_URL}/records/${id}/status`, { status }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success(`Claim ${status} successfully!`);
@@ -69,7 +75,7 @@ const AdminDashboardPage = () => {
     if (!window.confirm("Are you sure?")) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/admin/users/${userId}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/admin/users/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("User deleted.");
@@ -83,12 +89,22 @@ const AdminDashboardPage = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/doctors/add', docFormData, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/admin/add-doctor`, docFormData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Doctor added successfully!");
       fetchAllData();
-      setDocFormData({ name: '', specialization: '', experience: '', fees: '', image: '' });
+      setDocFormData({
+        name: '',
+        email: '',
+        password: '',
+        specialty: '',
+        experience: '',
+        location: '',
+        qualifications: '',
+        consultationFee: '',
+        image: ''
+      });
     } catch (error) {
       toast.error("Failed to add doctor.");
     }
@@ -108,7 +124,7 @@ const AdminDashboardPage = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/medicines', formData, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/medicines`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data', // Important for file uploads
           Authorization: `Bearer ${token}`
@@ -136,9 +152,18 @@ const AdminDashboardPage = () => {
             <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Admin Dashboard</h1>
             <p className="text-slate-500 font-medium mt-1">Manage users, doctors, medicines, and insurance claims.</p>
           </div>
-          <div className="flex items-center space-x-2 bg-indigo-50 px-4 py-2 rounded-xl text-indigo-700 font-bold text-sm">
-            <span>🛡️</span>
-            <span>System Administrator</span>
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 bg-indigo-50 px-4 py-2 rounded-xl text-indigo-700 font-bold text-sm">
+              <span>🛡️</span>
+              <span>System Administrator</span>
+            </div>
+            <button
+              onClick={logout}
+              className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-xl font-bold text-sm transition-all flex items-center space-x-2"
+            >
+              <span>🚪</span>
+              <span>Logout</span>
+            </button>
           </div>
         </div>
 
@@ -218,6 +243,61 @@ const AdminDashboardPage = () => {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'addDoctor' && (
+            <div className="max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="card-premium">
+                <h2 className="text-2xl font-bold text-slate-900 mb-8">Onboard New Specialist</h2>
+                <form onSubmit={handleAddDoctor} className="space-y-6">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-500 uppercase ml-1">Full Name</label>
+                      <input type="text" name="name" value={docFormData.name} onChange={onDocFormChange} placeholder="Dr. John Doe" required className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-500 uppercase ml-1">Email Address</label>
+                      <input type="email" name="email" value={docFormData.email} onChange={onDocFormChange} placeholder="doctor@smarthealth.com" required className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all" />
+                    </div>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-500 uppercase ml-1">Password</label>
+                      <input type="password" name="password" value={docFormData.password} onChange={onDocFormChange} placeholder="••••••••" required className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-500 uppercase ml-1">Specialty</label>
+                      <input type="text" name="specialty" value={docFormData.specialty} onChange={onDocFormChange} placeholder="e.g. Cardiologist" required className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all" />
+                    </div>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-500 uppercase ml-1">Qualifications</label>
+                      <input type="text" name="qualifications" value={docFormData.qualifications} onChange={onDocFormChange} placeholder="e.g. MBBS, MD" required className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-500 uppercase ml-1">Experience (Years)</label>
+                      <input type="number" name="experience" value={docFormData.experience} onChange={onDocFormChange} placeholder="10" required className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all" />
+                    </div>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-500 uppercase ml-1">Location</label>
+                      <input type="text" name="location" value={docFormData.location} onChange={onDocFormChange} placeholder="City, State" required className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-500 uppercase ml-1">Consultation Fees (₹)</label>
+                      <input type="number" name="consultationFee" value={docFormData.consultationFee} onChange={onDocFormChange} placeholder="500" required className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all" />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase ml-1">Profile Image URL</label>
+                    <input type="text" name="image" value={docFormData.image} onChange={onDocFormChange} placeholder="https://..." className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all" />
+                  </div>
+                  <button type="submit" className="w-full btn-premium py-4 shadow-lg shadow-indigo-200 mt-4">Register Doctor</button>
+                </form>
               </div>
             </div>
           )}

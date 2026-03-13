@@ -16,32 +16,59 @@ const CartPage = () => {
 
   const handleGetCurrentLocation = () => {
     if (!navigator.geolocation) {
-      return toast.error('Geolocation is not supported by your browser.');
+      return toast.error('Geolocation protocol is not supported by your browser engine.');
     }
-    const loadingToast = toast.loading('Fetching your location...');
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        const apiKey = import.meta.env.VITE_OPENCAGE_API_KEY;
-        const url = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apiKey}`;
 
-        try {
-          const { data } = await axios.get(url);
-          if (data.results && data.results.length > 0) {
-            const formattedAddress = data.results[0].formatted;
-            setAddress(formattedAddress);
-            toast.success('Location found!', { id: loadingToast });
-          } else {
-            toast.error('Could not determine address.', { id: loadingToast });
+    const loadingToast = toast.loading('Synchronizing with GPS coordinates...');
+    
+    // Recovery Function for Fallback
+    const requestLocation = (options) => {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          const apiKey = import.meta.env.VITE_OPENCAGE_API_KEY;
+          
+          if (!apiKey || apiKey === 'YOUR_OPENCAGE_API_KEY' || !apiKey) {
+            toast.error('Clinical Geocoding Key missing in configurations.', { id: loadingToast });
+            return;
           }
-        } catch (error) {
-          toast.error('Could not fetch address details.', { id: loadingToast });
-        }
-      },
-      () => {
-        toast.error('Unable to retrieve your location. Please check browser permissions.', { id: loadingToast });
-      }
-    );
+
+          const url = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apiKey}`;
+
+          try {
+            const { data } = await axios.get(url);
+            if (data.results && data.results.length > 0) {
+              const formattedAddress = data.results[0].formatted;
+              setAddress(formattedAddress);
+              toast.success('Coordinate precision mapping successful!', { id: loadingToast });
+            } else {
+              toast.error('Satellite data lookup yielded no address results.', { id: loadingToast });
+            }
+          } catch (error) {
+            toast.error('Network interference during address resolution.', { id: loadingToast });
+          }
+        },
+        (error) => {
+          // If high accuracy failed with Position Unavailable, try low accuracy fallback
+          if (options.enableHighAccuracy && (error.code === 2 || error.code === 3)) {
+            console.log("Retrying with low accuracy fallback...");
+            requestLocation({ enableHighAccuracy: false, timeout: 15000, maximumAge: 10000 });
+            return;
+          }
+
+          let message = 'Access Denied: Please enable location permissions in browser settings.';
+          if (error.code === error.TIMEOUT) message = 'Satellite signal timeout. Please try again.';
+          if (error.code === error.POSITION_UNAVAILABLE) message = 'Location information is currently unavailable on this device.';
+          
+          toast.error(message, { id: loadingToast });
+          console.error('Geolocation Error:', error);
+        },
+        options
+      );
+    };
+
+    // Initial Attempt with High Accuracy
+    requestLocation({ enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
   };
 
   const handleCheckout = async () => {
@@ -50,7 +77,7 @@ const CartPage = () => {
     }
     try {
       const token = localStorage.getItem('token');
-      const { data } = await axios.post('http://localhost:5000/api/checkout/generate-upi-qr', { address }, {
+      const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/checkout/generate-upi-qr`, { address }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setQrCode(data.qrCode);

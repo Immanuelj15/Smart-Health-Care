@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -14,7 +15,7 @@ const SymptomCheckerPage = () => {
     try {
       const token = localStorage.getItem('token');
       const { data } = await axios.post(
-        'http://localhost:5000/api/ai/symptom-checker',
+        `${import.meta.env.VITE_API_URL}/ai/symptom-checker`,
         { symptoms },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -101,7 +102,7 @@ const SymptomCheckerPage = () => {
 
                 <div className="mt-12 flex items-center justify-center p-6 bg-white/5 rounded-[32px] border border-white/5">
                   <p className="text-xs text-slate-400 text-center font-bold tracking-tight">
-                    Ready to discuss these findings? <Link to="/find-doctor" className="text-cyan-400 hover:text-white transition-colors underline underline-offset-4 ml-1">Connect with a specialist now.</Link>
+                    Ready to discuss these findings? <Link to="/find-doctors" className="text-cyan-400 hover:text-white transition-colors underline underline-offset-4 ml-1">Connect with a specialist now.</Link>
                   </p>
                 </div>
               </div>

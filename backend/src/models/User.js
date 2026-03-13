@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema({
     enum: ['patient', 'doctor', 'admin'],
     default: 'patient'
   },
+  profilePicture: { type: String }, // URL to profile image
 
   // ✅ Doctor-specific fields
   specialty: { type: String }, // e.g., "Cardiologist"

@@ -13,7 +13,7 @@ export const getAllUsers = async (req, res) => {
 
 // ✅ ADD DOCTOR
 export const addDoctor = async (req, res) => {
-  const { name, email, password, specialty, experience, location } = req.body;
+  const { name, email, password, specialty, experience, location, qualifications, consultationFee } = req.body;
 
   try {
     // Check if doctor already exists
@@ -22,7 +22,7 @@ export const addDoctor = async (req, res) => {
       return res.status(400).json({ message: 'Doctor with this email already exists' });
     }
 
-    // Create new doctor
+    // Create new doctor (middleware in User.js handles password hashing)
     const doctor = await User.create({
       name,
       email,
@@ -31,24 +31,25 @@ export const addDoctor = async (req, res) => {
       specialty,
       experience,
       location,
+      qualifications,
+      consultationFee
     });
 
-    if (doctor) {
-      res.status(201).json({
+    res.status(201).json({
+      success: true,
+      message: 'Doctor onboarding successful!',
+      doctor: {
         _id: doctor._id,
         name: doctor.name,
         email: doctor.email,
         role: doctor.role,
         specialty: doctor.specialty,
-        experience: doctor.experience,
-        location: doctor.location,
-      });
-    } else {
-      res.status(400).json({ message: 'Invalid doctor data' });
-    }
+        location: doctor.location
+      }
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
+    console.error('Doctor Onboarding Error:', error);
+    res.status(500).json({ message: error.message || 'Server Error' });
   }
 };
 

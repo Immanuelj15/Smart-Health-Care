@@ -21,6 +21,7 @@ import AdminRegisterPage from './pages/AdminRegisterPage';
 import ChatBot from './components/common/ChatBot';
 import AdminLoginPage from './pages/AdminLoginPage';
 import MedicalRecordsPage from './pages/MedicalRecordsPage';
+import ProfilePage from './pages/ProfilePage';
 
 // Import Contexts, Modals, and Layout
 import { AuthProvider } from './context/AuthContext';
@@ -66,6 +67,7 @@ function App() {
                   <Route path="/nutrition-scanner" element={<ProtectedRoute><NutritionScannerPage /></ProtectedRoute>} />
                   <Route path="/video-call/:roomId" element={<ProtectedRoute><VideoCallPage /></ProtectedRoute>} />
                   <Route path="/medical-records" element={<ProtectedRoute><MedicalRecordsPage /></ProtectedRoute>} />
+                  <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
                   <Route path="/login" element={<Navigate to="/" replace />} />
                 </Routes>
               </main>

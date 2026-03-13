@@ -1,8 +1,28 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { HfInference } from '@huggingface/inference';
 
-// Initialize the Google Generative AI client
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+// Initialize the Hugging Face client
+const hf = new HfInference(process.env.HUGGING_FACE_API_KEY);
+const MODEL_NAME = "mistralai/Mistral-7B-Instruct-v0.2";
+
+// Helper function to call the model
+const callHF = async (prompt) => {
+  try {
+    const response = await hf.textGeneration({
+      model: MODEL_NAME,
+      inputs: `<s>[INST] ${prompt} [/INST]`,
+      parameters: {
+        max_new_tokens: 500,
+        temperature: 0.7,
+        top_p: 0.95,
+        repetition_penalty: 1.15,
+      },
+    });
+    return response.generated_text.split('[/INST]').pop().trim();
+  } catch (error) {
+    console.error("Hugging Face API Error:", error);
+    throw error;
+  }
+};
 
 // For the Patient's Symptom Checker
 export const checkSymptoms = async (req, res) => {
@@ -22,8 +42,7 @@ export const checkSymptoms = async (req, res) => {
   `;
 
   try {
-    const result = await model.generateContent(prompt);
-    const aiResponse = result.response.text();
+    const aiResponse = await callHF(prompt);
     res.json({ result: aiResponse });
   } catch (error) {
     res.status(500).json({ message: 'Failed to get a response from the AI assistant.' });
@@ -46,25 +65,21 @@ export const assistDoctor = async (req, res) => {
   `;
 
   try {
-    const result = await model.generateContent(prompt);
-    const aiResponse = result.response.text();
+    const aiResponse = await callHF(prompt);
     res.json({ result: aiResponse });
   } catch (error) {
     res.status(500).json({ message: 'Failed to get a response from the AI assistant.' });
   }
 }
 
-
 // General AI Chatbot ("Dr. Smart")
 export const chatWithAI = async (req, res) => {
-  const { message, context } = req.body; // Context can be previous messages
+  const { message, context } = req.body;
 
   if (!message) {
     return res.status(400).json({ message: 'Message is required.' });
   }
 
-  // Construct a chat-like prompt
-  // In a real app, you'd pass the full history arrays provided by the frontend
   const conversationHistory = context ? context.map(msg => `${msg.sender}: ${msg.text}`).join('\n') : '';
 
   const prompt = `
@@ -74,7 +89,7 @@ export const chatWithAI = async (req, res) => {
     Rules:
     1. Be polite, empathetic, and professional.
     2. If a user asks about medical advice, strictly warn them you are an AI and they should see a doctor.
-    3. Keep answers concise (under 100 words) unless detailed explanation is requested.
+    3. Keep answers concise (under 100 words).
     4. If asked about features, you can mention: Symptom Checker, Video Consultations, and Medicine Store.
     
     Current Conversation History:
@@ -85,8 +100,7 @@ export const chatWithAI = async (req, res) => {
   `;
 
   try {
-    const result = await model.generateContent(prompt);
-    const aiResponse = result.response.text();
+    const aiResponse = await callHF(prompt);
     res.json({ reply: aiResponse });
   } catch (error) {
     console.error("AI Chat Error:", error);

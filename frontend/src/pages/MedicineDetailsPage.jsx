@@ -13,8 +13,8 @@ const MedicineDetailsPage = () => {
   useEffect(() => {
     const fetchMedicine = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:5000/api/medicines/${id}`);
-        setMedicine(data);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/medicines/${id}`);
+        setMedicine(res.data);
       } catch (error) {
         toast.error("Could not fetch medicine details.");
       } finally {

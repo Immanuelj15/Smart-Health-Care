@@ -75,7 +75,15 @@ export const login = async (req, res) => {
     }
     const payload = { userId: user.id, role: user.role };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.json({ token, role: user.role });
+    const resData = { 
+      token, 
+      role: user.role, 
+      name: user.name 
+    };
+    if (user.role === 'doctor') {
+      resData.specialty = user.specialty;
+    }
+    res.json(resData);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
@@ -98,5 +106,55 @@ export const registerAdmin = async (req, res) => {
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+/* -------------------- 👤 GET CURRENT USER PROFILE -------------------- */
+export const getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server Error');
+  }
+};
+
+/* -------------------- 📝 UPDATE USER PROFILE -------------------- */
+export const updateProfile = async (req, res) => {
+  const { name, mobileNumber, specialty, experience, location, qualifications, bio, dob } = req.body;
+  try {
+    let user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update fields if provided
+    if (name) user.name = name;
+    if (mobileNumber) user.mobileNumber = mobileNumber;
+    if (bio) user.bio = bio;
+    if (dob) user.dob = dob;
+    
+    // Handle image upload
+    if (req.file) {
+      user.profilePicture = req.file.path; // Cloudinary URL
+    }
+
+    // Doctor-specific fields
+    if (user.role === 'doctor') {
+      if (specialty) user.specialty = specialty;
+      if (experience) user.experience = experience;
+      if (location) user.location = location;
+      if (qualifications) user.qualifications = qualifications;
+    }
+
+    await user.save();
+    res.json({ message: 'Profile updated successfully', user });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server Error');
   }
 };

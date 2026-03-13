@@ -54,12 +54,8 @@ export const googleLogin = async (req, res) => {
         res.json({
             token,
             role: user.role,
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                picture
-            }
+            name: user.name,
+            picture
         });
 
     } catch (error) {

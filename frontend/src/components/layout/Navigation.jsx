@@ -1,13 +1,15 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useModal } from '../../context/ModalContext';
 
 const Navigation = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, role, logout } = useAuth();
   const { cart } = useCart();
   const { openLoginModal, openRegisterModal } = useModal();
+  const location = useLocation();
+
+  if (location.pathname.startsWith('/admin') || location.pathname.startsWith('/register/admin') || role === 'admin') return null;
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-4 transition-all duration-300">
@@ -30,6 +32,7 @@ const Navigation = () => {
                 <Link to="/surgeries" className="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors">Surgeries</Link>
                 <Link to="/symptom-checker" className="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors">Symptom Checker</Link>
                 <Link to="/nutrition-scanner" className="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors">Nutrition AI</Link>
+                <Link to="/profile" className="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors">Profile</Link>
                 <Link to="/dashboard" className="text-sm font-semibold text-indigo-600 px-4 py-2 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-all">My Dashboard</Link>
 
                 <Link to="/cart" className="relative p-2 hover:bg-slate-100 rounded-full transition-all">

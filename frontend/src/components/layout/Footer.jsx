@@ -1,6 +1,13 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
-const Footer = () => (
+const Footer = () => {
+  const { role } = useAuth();
+  const location = useLocation();
+  if (location.pathname.startsWith('/admin') || location.pathname.startsWith('/register/admin') || role === 'admin') return null;
+
+  return (
   <footer className="bg-slate-900 border-t border-slate-800 pt-20 pb-10 px-6">
     <div className="container mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
@@ -45,5 +52,6 @@ const Footer = () => (
       </div>
     </div>
   </footer>
-);
+    );
+};
 export default Footer;

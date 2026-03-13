@@ -3,6 +3,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const DoctorDashboardPage = () => {
+  const { user } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -15,7 +16,7 @@ const DoctorDashboardPage = () => {
   const fetchAppointments = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/doctors/my-appointments', {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/doctors/my-appointments`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAppointments(res.data);
@@ -32,7 +33,7 @@ const DoctorDashboardPage = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `http://localhost:5000/api/doctors/appointments/${id}/status`,
+        `${import.meta.env.VITE_API_URL}/doctors/appointments/${id}/status`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -51,7 +52,7 @@ const DoctorDashboardPage = () => {
     try {
       const token = localStorage.getItem('token');
       const { data } = await axios.post(
-        'http://localhost:5000/api/ai/doctor-assist',
+        `${import.meta.env.VITE_API_URL}/ai/doctor-assist`,
         { notes: aiNotes },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -80,10 +81,12 @@ const DoctorDashboardPage = () => {
             <p className="text-slate-500 font-medium mt-1">Manage your patients, appointments, and AI-assisted diagnoses.</p>
           </div>
           <div className="flex items-center space-x-4 bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
-            <div className="w-12 h-12 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-xl">👨‍⚕️</div>
+            <div className="w-12 h-12 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-xl">
+              {user.name ? user.name.charAt(0) : '👨‍⚕️'}
+            </div>
             <div className="pr-4">
-              <p className="text-sm font-bold text-slate-900">Dr. Sarah Jenkins</p>
-              <p className="text-[10px] font-bold text-slate-400 uppercase">Cardiologist</p>
+              <p className="text-sm font-bold text-slate-900">{user.name || 'Doctor'}</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase">{user.specialty || 'General Physician'}</p>
             </div>
           </div>
         </div>

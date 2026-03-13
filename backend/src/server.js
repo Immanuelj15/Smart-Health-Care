@@ -18,6 +18,7 @@ import checkoutRoutes from './routes/checkoutRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import nutritionRoutes from './routes/nutritionRoutes.js';
 import recordRoutes from './routes/recordRoutes.js';
+import reviewRoutes from './routes/reviewRoutes.js';
 // ❌ The import for 'orderRoutes.js' has been removed
 
 const app = express();
@@ -56,6 +57,7 @@ app.use('/api/checkout', checkoutRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/nutrition', nutritionRoutes);
 app.use('/api/records', recordRoutes);
+app.use('/api/reviews', reviewRoutes);
 // ❌ The app.use() for 'orderRoutes' has been removed
 
 // --- Socket.IO Logic ---

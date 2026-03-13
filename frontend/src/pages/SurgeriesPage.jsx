@@ -29,7 +29,7 @@ const SurgeriesPage = () => {
   useEffect(() => {
     const fetchSurgeries = async () => {
       try {
-        const { data } = await axios.get('http://localhost:5000/api/surgeries');
+        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/surgeries`);
         setSurgeries(data);
       } catch (error) {
         console.error("Failed to fetch surgeries", error);
@@ -51,7 +51,7 @@ const SurgeriesPage = () => {
     const token = localStorage.getItem('token');
     try {
       await axios.post(
-        'http://localhost:5000/api/consultations/book',
+        `${import.meta.env.VITE_API_URL}/consultations/book`,
         {
           surgeryId: formData.ailment,
           contactNumber: formData.contactNumber,

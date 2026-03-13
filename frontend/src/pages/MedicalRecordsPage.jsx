@@ -11,7 +11,7 @@ const MedicalRecordsPage = () => {
   const fetchRecords = async () => {
     try {
       const token = localStorage.getItem('token');
-      const { data } = await axios.get('http://localhost:5000/api/records/my-records', {
+      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/records/my-records`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setRecords(data);
@@ -34,7 +34,7 @@ const MedicalRecordsPage = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/records/upload', formData, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/records/upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
       });
       toast.success("Record uploaded successfully!");

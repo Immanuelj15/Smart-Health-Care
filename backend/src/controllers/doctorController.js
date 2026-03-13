@@ -1,19 +1,26 @@
 import User from '../models/User.js';
 import Consultation from '../models/Consultation.js';
 
-// Search doctors by location
+// Search doctors by location and specialty
 export const searchDoctors = async (req, res) => {
   try {
-    const { location } = req.query;
-    if (!location) {
-      return res.status(400).json({ message: 'Location query is required.' });
+    const { location, specialty } = req.query;
+    
+    let query = { role: 'doctor' };
+    
+    if (location) {
+      // Use partial match (case-insensitive) for better UX
+      query.location = { $regex: new RegExp(location, 'i') };
     }
-    const doctors = await User.find({
-      role: 'doctor',
-      location: { $regex: new RegExp(`^${location}$`, 'i') },
-    });
+    
+    if (specialty) {
+      query.specialty = { $regex: new RegExp(specialty, 'i') };
+    }
+
+    const doctors = await User.find(query);
     res.json(doctors);
   } catch (error) {
+    console.error("Search Doctors Error:", error);
     res.status(500).json({ message: 'Server Error' });
   }
 };

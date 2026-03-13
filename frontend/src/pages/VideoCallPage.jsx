@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
+import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 // Initialize socket outside component to avoid multiple connections
@@ -9,6 +10,7 @@ const socket = io(import.meta.env.VITE_API_URL.replace('/api', ''));
 const VideoCallPage = () => {
     const { roomId } = useParams();
     const navigate = useNavigate();
+    const { role, user } = useAuth();
     const [stream, setStream] = useState(null);
     const [me, setMe] = useState('');
     const [callActive, setCallActive] = useState(false);
@@ -119,7 +121,7 @@ const VideoCallPage = () => {
                         {callActive && (
                             <div className="absolute bottom-6 left-6 flex items-center space-x-2 bg-slate-900/60 backdrop-blur-md px-4 py-2 rounded-xl text-white text-[10px] font-black uppercase tracking-widest border border-white/10">
                                 <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                                <span>Dr. Sarah (Consultant)</span>
+                                <span>{role === 'doctor' ? `Dr. ${user.name}` : 'Medical Consultant'}</span>
                             </div>
                         )}
                     </div>

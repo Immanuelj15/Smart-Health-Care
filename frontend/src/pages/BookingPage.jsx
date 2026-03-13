@@ -26,7 +26,7 @@ const BookingPage = () => {
 
     try {
       await axios.post(
-        'http://localhost:5000/api/consultations/book',
+        `${import.meta.env.VITE_API_URL}/consultations/book`,
         {
           doctorId,
           ...formData,
